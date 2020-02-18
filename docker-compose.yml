@@ -1,0 +1,37 @@
+version: '2'
+services:
+    mysql:
+        image: mysql
+        container_name: group1-mysql
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=SomeRootPass1234
+            - MYSQL_DATABASE=testdb
+            - MYSQL_USER=testdbUser
+            - MYSQL_PASSWORD=testdbPass
+        volumes:
+            - ./mysql:/var/lib/mysql
+
+
+    nginx:
+        build: ./nginx_local
+        image: nginx
+        container_name: group1-nginx
+        restart: always
+        ports:
+            - "8080:80"
+        volumes:
+            - ./nginx_local/www:/var/www/
+        links:
+            - mysql
+            - php
+
+    php:
+        build: ./php
+        image: php:7-fpm
+        container_name: group1-php
+        restart: always
+        volumes:
+            - ./nginx_local/www:/var/www
+        links:
+            - mysql
